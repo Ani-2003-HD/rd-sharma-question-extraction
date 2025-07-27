@@ -1,0 +1,27 @@
+# Core dependencies
+PyMuPDF==1.23.8
+transformers==4.36.0
+torch==2.1.0
+nltk==3.8.1
+
+# OCR capabilities (optional but recommended)
+easyocr==1.7.0
+opencv-python==4.8.1.78
+
+# Additional utilities
+numpy==1.24.3
+pandas==2.0.3
+regex==2023.10.3
+pathlib2==2.3.7.post1
+
+# For better text processing
+unicodedata2==15.0.0
+python-Levenshtein==0.21.1
+
+# Optional: For better PDF processing
+pdfplumber==0.9.0
+pymupdf4llm==0.0.5
+
+# For testing
+pytest==7.4.3
+pytest-cov==4.1.0
