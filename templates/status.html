@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Processing Status - RD Sharma Extractor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h2 class="text-primary">
+                <i class="fas fa-cogs me-2"></i>
+                Processing Status
+            </h2>
+            <p class="text-muted">Job ID: <code>{{ job_id }}</code></p>
+        </div>
+
+        <!-- Status Card -->
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Job Information
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>File:</strong> {{ job.filename }}</p>
+                        <p><strong>Chapter:</strong> {{ job.chapter }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Topic:</strong> {{ job.topic }}</p>
+                        <p><strong>Started:</strong> {{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="card mt-4 border-0" id="progressCard">
+            <div class="card-body text-center">
+                <div id="processingStatus">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Processing...</span>
+                    </div>
+                    <h4 class="text-primary">Processing PDF...</h4>
+                    <p class="text-muted">This may take a few minutes depending on the file size and complexity.</p>
+                    
+                    <!-- Progress Steps -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="step-item active" id="step1">
+                                <i class="fas fa-file-pdf fa-2x text-primary mb-2"></i>
+                                <p class="mb-0">PDF Upload</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-item" id="step2">
+                                <i class="fas fa-eye fa-2x text-muted mb-2"></i>
+                                <p class="mb-0">Text Extraction</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-item" id="step3">
+                                <i class="fas fa-brain fa-2x text-muted mb-2"></i>
+                                <p class="mb-0">AI Processing</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-item" id="step4">
+                                <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
+                                <p class="mb-0">LaTeX Generation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="completedStatus" style="display: none;">
+                    <div class="text-success mb-3">
+                        <i class="fas fa-check-circle fa-3x"></i>
+                    </div>
+                    <h4 class="text-success">Processing Complete!</h4>
+                    <p class="text-muted">Your questions have been extracted successfully.</p>
+                    
+                    <div class="mt-4">
+                        <a href="/results/{{ job_id }}" class="btn btn-success btn-lg me-3" target="_blank">
+                            <i class="fas fa-eye me-2"></i>
+                            View Results
+                        </a>
+                        <a href="/download/{{ job_id }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-download me-2"></i>
+                            Download LaTeX
+                        </a>
+                    </div>
+                </div>
+
+                <div id="failedStatus" style="display: none;">
+                    <div class="text-danger mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x"></i>
+                    </div>
+                    <h4 class="text-danger">Processing Failed</h4>
+                    <p class="text-muted" id="errorMessage">An error occurred during processing.</p>
+                    
+                    <div class="mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Try Again
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-home me-2"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.step-item {
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.step-item.active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.step-item.completed {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+}
+
+.step-item i {
+    transition: all 0.3s ease;
+}
+
+.step-item.active i {
+    color: #1976d2 !important;
+}
+
+.step-item.completed i {
+    color: #2e7d32 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const jobId = '{{ job_id }}';
+let currentStep = 1;
+let statusCheckCount = 0;
+
+function updateStatus() {
+    fetch(`/api/status/${jobId}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Status update:', data);
+            statusCheckCount++;
+            
+            if (data.status === 'processing') {
+                // Update progress steps
+                updateProgressSteps();
+            } else if (data.status === 'completed') {
+                showCompletedStatus(data);
+            } else if (data.status === 'failed') {
+                showFailedStatus(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching status:', error);
+        });
+}
+
+function updateProgressSteps() {
+    // Simulate progress through steps
+    if (currentStep <= 4) {
+        document.getElementById(`step${currentStep}`).classList.add('completed');
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        
+        if (currentStep < 4) {
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+        }
+    }
+}
+
+function showCompletedStatus(data) {
+    console.log('Showing completed status:', data);
+    
+    // Hide processing status
+    const processingStatus = document.getElementById('processingStatus');
+    if (processingStatus) {
+        processingStatus.style.display = 'none';
+    }
+    
+    // Show completed status
+    const completedStatus = document.getElementById('completedStatus');
+    if (completedStatus) {
+        completedStatus.style.display = 'block';
+    }
+    
+    // Stop polling
+    if (statusInterval) {
+        clearInterval(statusInterval);
+    }
+}
+
+function showFailedStatus(error) {
+    console.log('Showing failed status:', error);
+    
+    // Hide processing status
+    const processingStatus = document.getElementById('processingStatus');
+    if (processingStatus) {
+        processingStatus.style.display = 'none';
+    }
+    
+    // Show failed status
+    const failedStatus = document.getElementById('failedStatus');
+    if (failedStatus) {
+        failedStatus.style.display = 'block';
+    }
+    
+    const errorMessage = document.getElementById('errorMessage');
+    if (errorMessage) {
+        errorMessage.textContent = error || 'An error occurred during processing.';
+    }
+    
+    // Stop polling
+    if (statusInterval) {
+        clearInterval(statusInterval);
+    }
+}
+
+// Check initial status immediately
+fetch(`/api/status/${jobId}`)
+    .then(response => response.json())
+    .then(data => {
+        console.log('Initial status check:', data);
+        if (data.status === 'completed') {
+            // Job is already completed, show completed status immediately
+            showCompletedStatus(data);
+        } else if (data.status === 'failed') {
+            // Job failed, show failed status immediately
+            showFailedStatus(data.error);
+        } else {
+            // Job is still processing, start polling
+            statusInterval = setInterval(updateStatus, 2000);
+            updateStatus();
+        }
+    })
+    .catch(error => {
+        console.error('Error in initial status check:', error);
+    });
+
+// Clean up interval when page is unloaded
+window.addEventListener('beforeunload', function() {
+    if (statusInterval) {
+        clearInterval(statusInterval);
+    }
+});
+</script>
+{% endblock %} 

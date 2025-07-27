@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}RD Sharma Extractor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 text-primary mb-3">
+                <i class="fas fa-graduation-cap me-3"></i>
+                RD Sharma Question Extractor
+            </h1>
+            <p class="lead text-muted">
+                Extract mathematical questions from RD Sharma Class 12 using AI-powered RAG pipeline
+            </p>
+        </div>
+
+        <!-- Selection Form -->
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>
+                    Select Chapter & Topic
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('extract_questions') }}" method="post" id="extractForm">
+                    <!-- Chapter Input -->
+                    <div class="mb-4">
+                        <label for="chapter" class="form-label fw-bold">
+                            <i class="fas fa-book me-2"></i>
+                            Chapter Number
+                        </label>
+                        <input type="number" class="form-control" id="chapter" name="chapter" 
+                               placeholder="e.g., 30" min="1" max="100" required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Enter the chapter number you want to extract questions from (1-100).
+                        </div>
+                    </div>
+
+                    <!-- Topic Input -->
+                    <div class="mb-4">
+                        <label for="topic" class="form-label fw-bold">
+                            <i class="fas fa-tag me-2"></i>
+                            Topic Name
+                        </label>
+                        <input type="text" class="form-control" id="topic" name="topic" 
+                               placeholder="e.g., Conditional Probability" required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Enter the specific topic within the chapter (e.g., "Conditional Probability", "Integration").
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="fas fa-magic me-2"></i>
+                            Extract Questions
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Popular Topics -->
+        <div class="card mt-4 border-0 bg-light">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Popular Topics to Try
+                </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Probability & Statistics</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Chapter 30: Conditional Probability</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Chapter 31: Bayes' Theorem</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Chapter 32: Random Variables</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Calculus</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Chapter 7: Integration</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Chapter 8: Applications of Integrals</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Chapter 9: Differential Equations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="text-primary mb-3">
+                            <i class="fas fa-brain fa-3x"></i>
+                        </div>
+                        <h5 class="card-title">AI-Powered</h5>
+                        <p class="card-text text-muted">
+                            Uses advanced RAG pipeline with GPT-2 for intelligent question extraction and validation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="text-success mb-3">
+                            <i class="fas fa-eye fa-3x"></i>
+                        </div>
+                        <h5 class="card-title">OCR Support</h5>
+                        <p class="card-text text-muted">
+                            Handles scanned PDFs with Tesseract OCR and EasyOCR fallback for better text extraction.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="text-info mb-3">
+                            <i class="fas fa-file-alt fa-3x"></i>
+                        </div>
+                        <h5 class="card-title">LaTeX Output</h5>
+                        <p class="card-text text-muted">
+                            Generates professional LaTeX documents with proper mathematical formatting and styling.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Demo -->
+        <div class="card mt-4 border-0 bg-light">
+            <div class="card-body text-center">
+                <h5 class="card-title">
+                    <i class="fas fa-play-circle me-2"></i>
+                    Want to see it in action?
+                </h5>
+                <p class="card-text">
+                    Check out our demo with sample results and see how the pipeline works!
+                </p>
+                <a href="{{ url_for('demo') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-eye me-2"></i>
+                    View Demo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('extractForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    form.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    });
+    
+    // Add click handlers for popular topics
+    const popularTopics = [
+        { chapter: '30', topic: 'Conditional Probability' },
+        { chapter: '7', topic: 'Integration' },
+        { chapter: '31', topic: 'Bayes Theorem' },
+        { chapter: '8', topic: 'Applications of Integrals' }
+    ];
+    
+    // You can add click handlers here if you want to auto-fill the form
+    // For now, just show them as suggestions
+});
+</script>
+{% endblock %} 

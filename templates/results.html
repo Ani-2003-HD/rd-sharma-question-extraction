@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Results - RD Sharma Extractor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h2 class="text-primary">
+                <i class="fas fa-check-circle me-2"></i>
+                Extraction Results
+            </h2>
+            <p class="text-muted">
+                Chapter {{ job.chapter }}: {{ job.topic }} | 
+                <span class="badge bg-success">{{ results.total_questions }} questions extracted</span>
+            </p>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="card shadow-lg border-0 mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Extraction Summary
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="stat-item">
+                            <h3 class="text-primary">{{ results.total_questions }}</h3>
+                            <p class="text-muted mb-0">Total Questions</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="stat-item">
+                            <h3 class="text-success">{{ "%.2f"|format(results.avg_confidence * 100) }}%</h3>
+                            <p class="text-muted mb-0">Avg Confidence</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="stat-item">
+                            <h3 class="text-info">{{ job.chapter }}</h3>
+                            <p class="text-muted mb-0">Chapter</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="stat-item">
+                            <h3 class="text-warning">{{ job.filename }}</h3>
+                            <p class="text-muted mb-0">Source File</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions List -->
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Extracted Questions
+                </h4>
+                <div>
+                    <a href="{{ url_for('download_file', job_id=job_id) }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-download me-1"></i>
+                        Download LaTeX
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if results.questions %}
+                    <div class="questions-container">
+                        {% for question in results.questions %}
+                        <div class="question-item mb-4 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-primary me-2">Q{{ loop.index }}</span>
+                                    {{ question.type.title() }} Question
+                                </h5>
+                                <span class="badge bg-{{ 'success' if question.confidence > 0.8 else 'warning' if question.confidence > 0.6 else 'danger' }}">
+                                    {{ "%.1f"|format(question.confidence * 100) }}% Confidence
+                                </span>
+                            </div>
+                            
+                            <div class="question-text mb-3">
+                                <p class="mb-0">{{ question.text }}</p>
+                            </div>
+                            
+                            <div class="question-details">
+                                <small class="text-muted">
+                                    <i class="fas fa-tag me-1"></i>
+                                    Type: {{ question.type.title() }} | 
+                                    <i class="fas fa-chart-line me-1"></i>
+                                    Confidence: {{ "%.2f"|format(question.confidence) }}
+                                </small>
+                            </div>
+                            
+                            {% if question.latex %}
+                            <div class="mt-2">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#latex{{ loop.index }}">
+                                    <i class="fas fa-code me-1"></i>
+                                    View LaTeX
+                                </button>
+                                <div class="collapse mt-2" id="latex{{ loop.index }}">
+                                    <div class="card card-body bg-light">
+                                        <code class="latex-code">{{ question.latex }}</code>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <h4>No Questions Extracted</h4>
+                        <p class="text-muted">
+                            No questions were found for the specified chapter and topic. 
+                            Try adjusting your search parameters.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-primary me-3">
+                <i class="fas fa-plus me-2"></i>
+                Extract More Questions
+            </a>
+            <a href="{{ url_for('download_file', job_id=job_id) }}" class="btn btn-success me-3">
+                <i class="fas fa-download me-2"></i>
+                Download LaTeX File
+            </a>
+            <a href="{{ url_for('demo') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-play me-2"></i>
+                View Demo
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.stat-item {
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.question-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid #007bff !important;
+}
+
+.question-item:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.latex-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.questions-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.question-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.question-details {
+    border-top: 1px solid #e9ecef;
+    padding-top: 0.5rem;
+}
+</style>
+{% endblock %} 

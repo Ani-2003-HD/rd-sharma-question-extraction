@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Demo - RD Sharma Extractor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 text-primary mb-3">
+                <i class="fas fa-play-circle me-3"></i>
+                Pipeline Demo
+            </h1>
+            <p class="lead text-muted">
+                See how our AI-powered RAG pipeline extracts mathematical questions from RD Sharma Class 12
+            </p>
+        </div>
+
+        <!-- Pipeline Overview -->
+        <div class="card shadow-lg border-0 mb-5">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>
+                    How It Works
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="step-demo">
+                            <div class="step-icon bg-primary text-white">
+                                <i class="fas fa-book fa-2x"></i>
+                            </div>
+                            <h5 class="mt-3">1. Select Chapter</h5>
+                            <p class="text-muted">Choose chapter number (1-100)</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="step-demo">
+                            <div class="step-icon bg-success text-white">
+                                <i class="fas fa-eye fa-2x"></i>
+                            </div>
+                            <h5 class="mt-3">2. Text Extraction</h5>
+                            <p class="text-muted">Extract text with OCR fallback</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="step-demo">
+                            <div class="step-icon bg-warning text-white">
+                                <i class="fas fa-brain fa-2x"></i>
+                            </div>
+                            <h5 class="mt-3">3. AI Processing</h5>
+                            <p class="text-muted">GPT-2 validates questions</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="step-demo">
+                            <div class="step-icon bg-info text-white">
+                                <i class="fas fa-file-alt fa-2x"></i>
+                            </div>
+                            <h5 class="mt-3">4. LaTeX Output</h5>
+                            <p class="text-muted">Generate formatted output</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Results -->
+        <div class="card shadow-lg border-0 mb-5">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Sample Results
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Chapter 30: Conditional Probability</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>15 questions extracted</li>
+                            <li><i class="fas fa-check text-success me-2"></i>92.3% average confidence</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Pattern + LLM validation</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-primary">Chapter 7: Integration</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>12 questions extracted</li>
+                            <li><i class="fas fa-check text-success me-2"></i>89.7% average confidence</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Mathematical formatting</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sample Questions -->
+                <div class="sample-questions">
+                    <h5 class="mb-3">Sample Extracted Questions:</h5>
+                    
+                    <div class="question-demo mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-0">
+                                <span class="badge bg-primary me-2">Q1</span>
+                                Conditional Probability
+                            </h6>
+                            <span class="badge bg-success">94.2% Confidence</span>
+                        </div>
+                        <p class="mb-0">
+                            "If P(A) = 0.3 and P(B|A) = 0.6, find P(A ∩ B)."
+                        </p>
+                    </div>
+
+                    <div class="question-demo mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-0">
+                                <span class="badge bg-primary me-2">Q2</span>
+                                Integration
+                            </h6>
+                            <span class="badge bg-success">91.8% Confidence</span>
+                        </div>
+                        <p class="mb-0">
+                            "Evaluate the definite integral ∫₀¹ (x² + 2x + 1) dx."
+                        </p>
+                    </div>
+
+                    <div class="question-demo mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-0">
+                                <span class="badge bg-primary me-2">Q3</span>
+                                Probability
+                            </h6>
+                            <span class="badge bg-success">88.5% Confidence</span>
+                        </div>
+                        <p class="mb-0">
+                            "A bag contains 5 red and 3 blue balls. Two balls are drawn at random. Find the probability that both are red."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Chapters -->
+        <div class="card shadow-lg border-0 mb-5">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Available Chapters
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <h6 class="text-primary">Calculus</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 7: Integration</li>
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 8: Applications of Integrals</li>
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 9: Differential Equations</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h6 class="text-primary">Probability & Statistics</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 30: Conditional Probability</li>
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 31: Bayes' Theorem</li>
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 32: Random Variables</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <h6 class="text-primary">Algebra</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 1: Relations and Functions</li>
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 2: Inverse Trigonometric Functions</li>
+                            <li><i class="fas fa-circle text-muted me-2"></i>Chapter 3: Matrices</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="row mb-5">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="text-primary mb-3">
+                            <i class="fas fa-robot fa-3x"></i>
+                        </div>
+                        <h5 class="card-title">AI-Powered</h5>
+                        <p class="card-text text-muted">
+                            Uses GPT-2 for intelligent question validation and confidence scoring.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="text-success mb-3">
+                            <i class="fas fa-eye fa-3x"></i>
+                        </div>
+                        <h5 class="card-title">OCR Support</h5>
+                        <p class="card-text text-muted">
+                            Handles scanned PDFs with Tesseract OCR and EasyOCR fallback.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="text-info mb-3">
+                            <i class="fas fa-file-alt fa-3x"></i>
+                        </div>
+                        <h5 class="card-title">LaTeX Output</h5>
+                        <p class="card-text text-muted">
+                            Generates professional LaTeX documents with mathematical formatting.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Try It Now -->
+        <div class="card border-0 bg-light">
+            <div class="card-body text-center">
+                <h4 class="card-title">
+                    <i class="fas fa-rocket me-2"></i>
+                    Ready to Try It?
+                </h4>
+                <p class="card-text">
+                    Select a chapter and topic to see the extraction pipeline in action!
+                </p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-play me-2"></i>
+                    Start Extraction
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.step-demo {
+    padding: 1rem;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.question-demo {
+    transition: all 0.3s ease;
+    border-left: 4px solid #007bff !important;
+}
+
+.question-demo:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.sample-questions {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+</style>
+{% endblock %} 
